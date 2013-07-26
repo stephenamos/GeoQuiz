@@ -1,7 +1,10 @@
 package com.bignerdranch.android.geoquiz;
 
+import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -19,9 +22,10 @@ public class QuizActivity extends Activity {
 	private Button mNextButton;
 	private Button mPreviousButton;
 	private Button mCheatButton;
-
+	
 	private TextView mQuestionTextView;
-
+	private TextView mApiVersionTextView;
+	
 	private TrueFalse[] mQuestionBank = new TrueFalse[] {
 			new TrueFalse(R.string.question_africa, false),
 			new TrueFalse(R.string.question_americas, true),
@@ -47,12 +51,23 @@ public class QuizActivity extends Activity {
 		}
 	}
 
+	@TargetApi(11)
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//		Log.d(TAG, "onCreate(Bundle) called.");
 		setContentView(R.layout.activity_quiz);
 
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			ActionBar actionBar = getActionBar();
+			actionBar.setSubtitle("Bodies of water");	
+		}
+		
+		mIsCheater = false;
+		
+		mApiVersionTextView = (TextView) findViewById(R.id.apiversion_text_view);
+		mApiVersionTextView.setText("API Level: " + Build.VERSION.SDK_INT);
+		
 		mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
 		mQuestionTextView.setOnClickListener(new View.OnClickListener() {
 
