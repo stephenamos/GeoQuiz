@@ -1,8 +1,8 @@
 package com.bignerdranch.android.geoquiz;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +18,7 @@ public class QuizActivity extends Activity {
 	private Button mFalseButton;
 	private Button mNextButton;
 	private Button mPreviousButton;
+	private Button mCheatButton;
 
 	private TextView mQuestionTextView;
 
@@ -30,6 +31,21 @@ public class QuizActivity extends Activity {
 	};
 
 	private int mCurrentIndex = 0;
+
+	private boolean mIsCheater;
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (data == null) {
+			return;
+		}
+		
+		if (!mIsCheater) {
+			mIsCheater = (Boolean) data.getBooleanExtra(CheatActivity.EXTRA_ANSWER_SHOWN, false);	
+		}
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +104,22 @@ public class QuizActivity extends Activity {
 
 		if(savedInstanceState != null) {
 			mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+			mIsCheater = savedInstanceState.getBoolean(CheatActivity.EXTRA_ANSWER_SHOWN);
 		}
+
+		mCheatButton = (Button) findViewById(R.id.cheat_button);
+		mCheatButton.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(QuizActivity.this, CheatActivity.class);
+				boolean answerIsTrue = mQuestionBank[mCurrentIndex].isTrueQuestion();
+				i.putExtra(CheatActivity.EXTRA_ANSWER_IS_TRUE, answerIsTrue);
+				startActivityForResult(i, 0); //The second parameter is the request code. The request code
+				//is a user-defined integer that is sent to the child activity and then received back by the parent.
+				//It is used when an activity starts more than one type of child activity and needs to tell who is reporting back.
+			}
+		});
 
 		updateQuestion();
 	}
@@ -115,10 +146,14 @@ public class QuizActivity extends Activity {
 
 		int messageResId = 0;
 
-		if (userPressedTrue == answerIsTrue) {
-			messageResId = R.string.correct_toast;
+		if (mIsCheater) {
+			messageResId = R.string.judgement_toast;
 		} else {
-			messageResId = R.string.incorrect_toast;
+			if (userPressedTrue == answerIsTrue) {
+				messageResId = R.string.correct_toast;
+			} else {
+				messageResId = R.string.incorrect_toast;
+			}
 		}
 
 		Toast.makeText(QuizActivity.this, messageResId, Toast.LENGTH_SHORT).show();
@@ -136,6 +171,7 @@ public class QuizActivity extends Activity {
 		super.onSaveInstanceState(savedInstanceState);
 		//		Log.i(TAG, "onSaveInstanceState() called.");
 		savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+		savedInstanceState.putBoolean(CheatActivity.EXTRA_ANSWER_SHOWN, mIsCheater);
 	}
 
 	@Override
