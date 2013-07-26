@@ -11,9 +11,9 @@ import android.widget.Toast;
 
 public class QuizActivity extends Activity {
 
-	private static final String TAG = "QuizActivity";
+	//	private static final String TAG = "QuizActivity";
 	private static final String KEY_INDEX = "index";
-	
+
 	private Button mTrueButton;
 	private Button mFalseButton;
 	private Button mNextButton;
@@ -34,7 +34,7 @@ public class QuizActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.d(TAG, "onCreate(Bundle) called.");
+		//		Log.d(TAG, "onCreate(Bundle) called.");
 		setContentView(R.layout.activity_quiz);
 
 		mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
@@ -89,7 +89,7 @@ public class QuizActivity extends Activity {
 		if(savedInstanceState != null) {
 			mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
 		}
-		
+
 		updateQuestion();
 	}
 
@@ -101,8 +101,13 @@ public class QuizActivity extends Activity {
 	}
 
 	private void updateQuestion() {
-		int question = mQuestionBank[mCurrentIndex].getQuestion();
-		mQuestionTextView.setText(question);
+		try {
+
+			int question = mQuestionBank[mCurrentIndex].getQuestion();
+			mQuestionTextView.setText(question);	
+		} catch (ArrayIndexOutOfBoundsException e) {
+			//			Log.e(TAG, "Index was out of bounds.", e);
+		}
 	}
 
 	private void checkAnswer(boolean userPressedTrue) {
@@ -119,48 +124,48 @@ public class QuizActivity extends Activity {
 		Toast.makeText(QuizActivity.this, messageResId, Toast.LENGTH_SHORT).show();
 	}
 
-	
+
 	/**
 	 * The default implementation of onSaveInstanceState(...) asks all of the activity's views(The UI widgets) to save their
-	 * state as data in the Bundle object. 
+	 * state as data in the Bundle object. Note: All custom classes that wish to save data to the bundle must be Serializable
 	 * 
 	 * @param outState A Bundle is a structure that maps string keys to values of certain limited types.
 	 */
 	@Override
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
-		Log.i(TAG, "onSaveInstanceState() called.");
+		//		Log.i(TAG, "onSaveInstanceState() called.");
 		savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		Log.d(TAG, "onDestroy() method called.");
+		//		Log.d(TAG, "onDestroy() method called.");
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		Log.d(TAG, "onPause() method called.");
+		//		Log.d(TAG, "onPause() method called.");
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.d(TAG, "onResume() method called.");
+		//		Log.d(TAG, "onResume() method called.");
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-		Log.d(TAG, "onStart() method called.");
+		//		Log.d(TAG, "onStart() method called.");
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		Log.d(TAG, "onStop() method called.");
+		//		Log.d(TAG, "onStop() method called.");
 	}
 
 }
